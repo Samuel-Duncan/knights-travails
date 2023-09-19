@@ -6,11 +6,15 @@ export default class KnightMoves {
     this.end = end;
   }
 
-  static checkMove(move) {
-    if (move < 0 || move > 7) {
-      return false;
-    }
-    return true;
+  static filterMoves(moves) {
+    const checkMoves = (num) => {
+      if (num < 0 || num > 7) {
+        return false;
+      }
+      return true;
+    };
+
+    return moves.filter((move) => move.every(checkMoves));
   }
 
   static getMoves(start) {
@@ -30,6 +34,8 @@ export default class KnightMoves {
       start[1] + move[1],
     ]);
 
-    return allMoves.filter((move) => move.every(KnightMoves.checkMove));
+    allMoves.push(start);
+
+    return KnightMoves.filterMoves(allMoves);
   }
 }

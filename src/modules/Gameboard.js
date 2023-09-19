@@ -17,7 +17,13 @@ export default class Gameboard {
     return chessBoard;
   }
 
-  static createBoardRec(rows, cols, currentRow = 0, currentCol = 0, chessBoard = []) {
+  static createBoardRec(
+    rows,
+    cols,
+    currentRow = 0,
+    currentCol = 0,
+    chessBoard = [],
+  ) {
     if (currentRow === rows) {
       return chessBoard;
     }
@@ -28,6 +34,12 @@ export default class Gameboard {
       return this.createBoardRec(rows, cols, currentRow + 1, 0, chessBoard);
     }
 
-    return this.createBoardRec(rows, cols, currentRow, currentCol + 1, chessBoard);
+    return this.createBoardRec(
+      rows,
+      cols,
+      currentRow,
+      currentCol + 1,
+      chessBoard,
+    );
   }
 }

@@ -3,13 +3,17 @@ import Queue from './Queue';
 
 export default class Tree {
   constructor(array) {
-    this.array = Tree.cleanArray(array);
-    this.tree = null;
+    this.array = Tree.cleanArrayKnight(array);
+    this.root = null;
     this.buildTree(this.array);
   }
 
   static cleanArray(array) {
     return array.filter((item, index) => array.indexOf(item) === index).sort();
+  }
+
+  static cleanArrayKnight(array) {
+    return array.filter((item, index) => array.indexOf(item) === index);
   }
 
   buildTree(array, start = 0, end = array.length - 1) {
@@ -21,7 +25,7 @@ export default class Tree {
     const node = new Node(array[mid]);
     node.left = this.buildTree(array, start, mid - 1);
     node.right = this.buildTree(array, mid + 1, end);
-    this.tree = node;
+    this.root = node;
     return node;
   }
 
@@ -47,7 +51,7 @@ export default class Tree {
   }
 
   insertNode(data) {
-    this.tree = Tree.insertRec(this.tree, data);
+    this.root = Tree.insertRec(this.root, data);
   }
 
   static insertRec(root, data) {
@@ -65,7 +69,7 @@ export default class Tree {
   }
 
   deleteNode(data) {
-    this.tree = Tree.deleteRec(this.tree, data);
+    this.root = Tree.deleteRec(this.root, data);
   }
 
   static deleteRec(root, data) {
@@ -108,8 +112,8 @@ export default class Tree {
 
   findNode(data) {
     return (
-      !Tree.findRec(this.tree, data)) ? `Node ${data} not found.`
-      : Tree.findRec(this.tree, data);
+      !Tree.findRec(this.root, data)) ? `Node ${data} not found.`
+      : Tree.findRec(this.root, data);
   }
 
   static findRec(root, data) {
@@ -125,39 +129,34 @@ export default class Tree {
   }
 
   levelOrder() {
-    return Tree.levelOrderRec(this.tree);
+    return Tree.levelOrderRec(this.root);
   }
 
-  static levelOrderRec(root) {
-    const result = [];
+  static levelOrderRec(root, result = []) {
+    if (root == null) {
+      return result;
+    }
 
-    const levelOrder = () => {
-      if (root == null) {
-        return;
+    const queue = new Queue();
+    queue.enqueue(root);
+
+    while (!queue.isEmpty()) {
+      const current = queue.dequeue();
+      result.push(current.data);
+
+      if (current.left != null) {
+        queue.enqueue(current.left);
       }
-
-      const queue = new Queue();
-      queue.enqueue(root);
-
-      while (!queue.isEmpty()) {
-        const current = queue.dequeue();
-        result.push(current.data);
-
-        if (current.left != null) {
-          queue.enqueue(current.left);
-        }
-        if (current.right != null) {
-          queue.enqueue(current.right);
-        }
+      if (current.right != null) {
+        queue.enqueue(current.right);
       }
-    };
+    }
 
-    levelOrder();
     return result;
   }
 
   inOrder() {
-    return Tree.inOrderRec(this.tree);
+    return Tree.inOrderRec(this.root);
   }
 
   static inOrderRec(root) {
@@ -176,7 +175,7 @@ export default class Tree {
   }
 
   preOrder() {
-    return Tree.preOrderRec(this.tree);
+    return Tree.preOrderRec(this.root);
   }
 
   static preOrderRec(root) {
@@ -197,7 +196,7 @@ export default class Tree {
   }
 
   postOrder() {
-    return Tree.postOrderRec(this.tree);
+    return Tree.postOrderRec(this.root);
   }
 
   static postOrderRec(root) {
@@ -218,7 +217,7 @@ export default class Tree {
   }
 
   findHeight(x) {
-    const height = Tree.findHeightRec(this.tree, x);
+    const height = Tree.findHeightRec(this.root, x);
     if (height !== undefined) {
       return `Height: ${height}`;
     }
@@ -249,9 +248,9 @@ export default class Tree {
   }
 
   findDepth(x) {
-    const depth = Tree.findDepthRec(this.tree, x);
+    const depth = Tree.findDepthRec(this.root, x);
     if (depth >= 0) {
-      return `Depth: ${depth}`;
+      return depth;
     }
     return `Node ${x} not found.`;
   }

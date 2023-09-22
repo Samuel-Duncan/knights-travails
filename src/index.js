@@ -6,8 +6,7 @@ const board = new Gameboard(8, 8);
 const start = [0, 0];
 const end = [1, 2];
 
-const boardTree = new Tree(board.board);
-boardTree.prettyPrint(boardTree.root);
-const movesTree = KnightMoves.getMoves(start);
+const moves = KnightMoves.getMovesRecursive(start);
+const movesTree = new Tree(moves);
 movesTree.prettyPrint(movesTree.root);
-console.log(KnightMoves.findPath(movesTree.root));
+console.log(KnightMoves.getMovesRecursive(start));

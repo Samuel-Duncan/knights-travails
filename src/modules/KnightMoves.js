@@ -32,20 +32,74 @@ export default class KnightMoves {
     };
 
     // Return array containing only valid moves
-    return moves.filter((move) => move.every(checkMoves));
+    const validMoves = moves.filter((move) => move.every(checkMoves));
+    // Cleanse duplicates
+    return validMoves.filter((item, index) => validMoves.indexOf(item) === index);
   }
 
-  buildTree(array, start = 0, end = array.length - 1) {
-    if (start > end) {
-      return null;
+  static getMovesRecursive(
+    start,
+    moves = [
+      [1, 2],
+      [2, 1],
+      [2, -1],
+      [1, -2],
+      [-1, -2],
+      [-2, -1],
+      [-2, 1],
+      [-1, 2],
+    ],
+    allMoves = [],
+  ) {
+    if (start[0] < 0 || start[0] > 7 || start[1] < 0 || start[1] > 7) {
+      console.error('starting coordinates must be within 0-7');
+      return;
     }
 
-    const mid = Math.floor((start + end) / 2);
-    const node = new Node(array[mid]);
-    node.left = this.buildTree(array, start, mid - 1);
-    node.right = this.buildTree(array, mid + 1, end);
-    this.root = node;
-    return node;
+    if (moves.length <= 0) {
+      return;
+    }
+    const move = moves.pop();
+    const newX = start[0] + move[0];
+    const newY = start[1] + move[1];
+    const newMove = [newX, newY];
+    allMoves.push(newMove);
+    this.getMovesRecursive(start, moves, allMoves);
+
+    const validMoves = KnightMoves.filterMoves(allMoves);
+    validMoves.sort();
+    const mid = Math.floor((validMoves.length / 2));
+    validMoves.splice(mid, 0, start);
+
+    return validMoves;
+  }
+
+  static getMovesLoop(start) {
+    const moves = [
+      [1, 2],
+      [2, 1],
+      [2, -1],
+      [1, -2],
+      [-1, -2],
+      [-2, -1],
+      [-2, 1],
+      [-1, 2],
+    ];
+
+    const allMoves = [];
+
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      const newX = start[0] + move[0];
+      const newY = start[1] + move[1];
+      const newMove = [newX, newY];
+
+      if (KnightMoves.filterMoves(newMove)) {
+        allMoves.push(newMove);
+      }
+    }
+
+    return allMoves;
   }
 
   static getMoves(start) {

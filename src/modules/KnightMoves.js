@@ -1,4 +1,5 @@
 import Tree from './Tree';
+import Node from './Node';
 import Queue from './Queue';
 
 // Function to Build the Tree (Generate Moves):
@@ -21,23 +22,26 @@ export default class KnightMoves {
   constructor(start, end) {
     this.start = start;
     this.end = end;
+    this.movesFromStart = new Node(start);
+  }
+
+  static checkStart(start) {
+    if (start[0] < 0 || start[0] > 7 || start[1] < 0 || start[1] > 7) {
+      return true;
+    }
+    return false;
   }
 
   static filterMoves(moves) {
-    const checkMoves = (num) => {
-      if (num < 0 || num > 7) {
-        return false;
-      }
-      return true;
-    };
+    const uniqueMoves = moves.filter((item, index, self) => {
+      const jsonString = JSON.stringify(item);
+      return self.findIndex((otherItem) => JSON.stringify(otherItem) === jsonString) === index;
+    });
 
-    // Return array containing only valid moves
-    const validMoves = moves.filter((move) => move.every(checkMoves));
-    // Cleanse duplicates
-    return validMoves.filter((item, index) => validMoves.indexOf(item) === index);
+    return uniqueMoves;
   }
 
-  static getMovesRecursive(
+  getMoves(
     start,
     moves = [
       [1, 2],
@@ -49,87 +53,21 @@ export default class KnightMoves {
       [-2, 1],
       [-1, 2],
     ],
-    allMoves = [],
   ) {
-    if (start[0] < 0 || start[0] > 7 || start[1] < 0 || start[1] > 7) {
-      console.error('starting coordinates must be within 0-7');
-      return;
+    if (moves.length < 1) {
+      return this.movesFromStart;
     }
 
-    if (moves.length <= 0) {
-      return;
-    }
     const move = moves.pop();
     const newX = start[0] + move[0];
     const newY = start[1] + move[1];
-    const newMove = [newX, newY];
-    allMoves.push(newMove);
-    this.getMovesRecursive(start, moves, allMoves);
 
-    const validMoves = KnightMoves.filterMoves(allMoves);
-    validMoves.sort();
-    const mid = Math.floor((validMoves.length / 2));
-    validMoves.splice(mid, 0, start);
-
-    return validMoves;
-  }
-
-  static getMovesLoop(start) {
-    const moves = [
-      [1, 2],
-      [2, 1],
-      [2, -1],
-      [1, -2],
-      [-1, -2],
-      [-2, -1],
-      [-2, 1],
-      [-1, 2],
-    ];
-
-    const allMoves = [];
-
-    for (let i = 0; i < moves.length; i++) {
-      const move = moves[i];
-      const newX = start[0] + move[0];
-      const newY = start[1] + move[1];
+    if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
       const newMove = [newX, newY];
-
-      if (KnightMoves.filterMoves(newMove)) {
-        allMoves.push(newMove);
-      }
+      this.movesFromStart.add(newMove);
     }
 
-    return allMoves;
-  }
-
-  static getMoves(start) {
-    if (start[0] < 0 || start[0] > 7 || start[1] < 0 || start[1] > 7) {
-      console.error('starting coordinates must be within 0-7');
-      return;
-    }
-
-    const moves = [
-      [1, 2],
-      [2, 1],
-      [2, -1],
-      [1, -2],
-      [-1, -2],
-      [-2, -1],
-      [-2, 1],
-      [-1, 2],
-    ];
-
-    const allMoves = moves.map((move) => [
-      start[0] + move[0],
-      start[1] + move[1],
-    ]);
-
-    const validMoves = KnightMoves.filterMoves(allMoves);
-    const mid = Math.floor((validMoves.length / 2));
-    validMoves.splice(mid, 0, start);
-    const movesTree = new Tree(validMoves);
-
-    return movesTree;
+    return this.getMoves(start, moves, this.movesFromStart);
   }
 
   static findPath(start, end, path = []) {

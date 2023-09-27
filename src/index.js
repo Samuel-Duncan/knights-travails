@@ -1,12 +1,8 @@
 import Tree from './modules/Tree';
 import KnightMoves from './modules/KnightMoves';
-import Gameboard from './modules/Gameboard';
 
-const board = new Gameboard(8, 8);
-const start = [0, 0];
-const end = [1, 2];
-
-const moves = KnightMoves.getMovesRecursive(start);
-const movesTree = new Tree(moves);
-movesTree.prettyPrint(movesTree.root);
-console.log(KnightMoves.getMovesRecursive(start));
+const start = [3, 3];
+const end = [4, 3];
+const knight = new KnightMoves(start, end);
+knight.getMoves(knight.start);
+console.log(knight.movesFromStart);

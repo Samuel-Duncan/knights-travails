@@ -1,7 +1,7 @@
 {
-  "name": "binary-search-tree",
+  "name": "knights-travails",
   "version": "1.0.0",
-  "description": "Binary Search Tree Project",
+  "description": "Knights Travails Project",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -1,4 +1,3 @@
-import Tree from './Tree';
 import Node from './Node';
 import Queue from './Queue';
 
@@ -22,23 +21,7 @@ export default class KnightMoves {
   constructor(start, end) {
     this.start = start;
     this.end = end;
-    this.movesFromStart = new Node(start);
-  }
-
-  static checkStart(start) {
-    if (start[0] < 0 || start[0] > 7 || start[1] < 0 || start[1] > 7) {
-      return true;
-    }
-    return false;
-  }
-
-  static filterMoves(moves) {
-    const uniqueMoves = moves.filter((item, index, self) => {
-      const jsonString = JSON.stringify(item);
-      return self.findIndex((otherItem) => JSON.stringify(otherItem) === jsonString) === index;
-    });
-
-    return uniqueMoves;
+    this.moves = this.getMoves(start);
   }
 
   getMoves(
@@ -53,43 +36,51 @@ export default class KnightMoves {
       [-2, 1],
       [-1, 2],
     ],
+    root = new Node(start),
   ) {
     if (moves.length < 1) {
-      return this.movesFromStart;
+      return root;
     }
 
-    const move = moves.pop();
+    const move = moves.shift();
     const newX = start[0] + move[0];
     const newY = start[1] + move[1];
 
     if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
       const newMove = [newX, newY];
-      this.movesFromStart.add(newMove);
+      root.add(newMove);
     }
 
-    return this.getMoves(start, moves, this.movesFromStart);
+    return this.getMoves(start, moves, root);
   }
 
-  static findPath(start, end, path = []) {
-    if (JSON.stringify(start) === JSON.stringify(end) || start == null) {
-      return path;
+  // Level Order
+  searchMoves(start, end, moves = this.moves) {
+    if (moves == null) {
+      return;
     }
 
-    const queue = new Queue();
-    queue.enqueue(start);
+    const q = new Queue();
+    q.enqueue(moves);
 
-    while (!queue.isEmpty()) {
-      const current = queue.dequeue();
-      path.push(current.data);
+    while (!q.isEmpty()) {
+      let n = q.size();
 
-      if (current.left != null) {
-        queue.enqueue(current.left);
-      }
-      if (current.right != null) {
-        queue.enqueue(current.right);
+      while (n > 0) {
+        const p = q.dequeue();
+        if (p == null) {
+          return;
+        }
+        console.log(p.data);
+
+        for (let i = 0; i < p.descendants.length; i++) {
+          q.enqueue(p.descendants[i]);
+          n--;
+          // if (JSON.stringify(p.data) !== JSON.stringify(end)) {
+          //   p.descendants[i].add(this.getMoves(p.descendants[i].data));
+          // }
+        }
       }
     }
-
-    return path;
   }
 }
